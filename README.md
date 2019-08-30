@@ -30,9 +30,16 @@ Measurementor has a number of configurable settings including the URLs and crede
 To update these variables you can just run the setup.sh script and it will prompt you to enter all the configurable values.
 
 
+Prerequisites to open the project in IntelliJ:
+    - sdk install gradle 2.14.1
+    - use JDK 8 for project
+    
+
 Get your vagrant box up and running:
 
     vagrant up
+    
+TODO vagrant up fails on some dependency conflict
 
 ssh into the vagrant box you just set up:
 

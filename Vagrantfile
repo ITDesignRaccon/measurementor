@@ -62,4 +62,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "shell", inline: $script
   config.vm.provision "puppet", manifests_path: "manifests", manifest_file: "default.pp" #, module_path: "/etc/puppet/modules"
 
+  # installs VBox Guest Additions on the VM
+  if Vagrant.has_plugin?("vagrant-vbguest")
+    config.vbguest.auto_update = false
+    config.vbguest.no_install = true
+    config.vbguest.no_remote = true
+  end
+
+  # TODO vagrant up still fails on some dependency conflict
 end
