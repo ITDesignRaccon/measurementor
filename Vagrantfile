@@ -5,10 +5,13 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $script = <<SCRIPT
-mkdir -p /etc/puppet/modules;
-if [ ! -d /etc/puppet/modules/file_concat ]; then
-puppet module install ispavailability/file_concat
-fi
+mkdir -p /etc/puppet/modules
+
+# FIX conflicting
+# if [ ! -d /etc/puppet/modules/file_concat ]; then
+# puppet module install ispavailability/file_concat
+# fi
+
 if [ ! -d /etc/puppet/modules/apt ]; then
 puppet module install puppetlabs-apt
 fi
@@ -28,7 +31,8 @@ if [ ! -d /etc/puppet/modules/gvm ]; then
 puppet module install paulosuzart-gvm
 fi
 if [ ! -d /etc/puppet/modules/stdlib ]; then
-puppet module install puppetlabs-stdlib
+# TODO remove version if not needed the live below
+puppet module install puppetlabs-stdlib --version 4.21.0
 fi
 if [ ! -d /etc/puppet/modules/nodejs ]; then
 puppet module install puppetlabs-nodejs
@@ -46,8 +50,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vbguest.auto_update = true
   end
 
-  config.vm.synced_folder "PATH_TO_DOWNLOADED_PROJECT_HERE", "/measurementor", create: "true" #TODO change this to where you are running measurementor
+  config.vm.synced_folder ".", "/measurementor", create: "true"
   config.vm.box = "hashicorp/precise64"
+  config.vm.box_version = "1.0.0"
+  config.vm.hostname = "localhost"
+
   config.vm.network :forwarded_port, guest: 27017, host: 27017 #mongo
   config.vm.network :forwarded_port, guest: 28017, host: 28017 #mongo
   config.vm.network :forwarded_port, guest: 5601, host: 5601 #kibana
@@ -59,6 +66,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     vb.customize ["modifyvm", :id, "--cpus", "2", "--memory", "4096"] #best practice for vagrant is to use 1/4 of the host's memory
     vb.gui = false  #if you want to see the screen, set this to true
   end
+
+  # FIX attempt based on: https://blog.doismellburning.co.uk/upgrading-puppet-in-vagrant-boxes/
+  config.vm.provision :shell, :path => "upgrade_puppet.sh"
+  config.vm.provision "shell", inline: 'echo "START=yes" > /etc/default/puppet'
   config.vm.provision "shell", inline: $script
   config.vm.provision "puppet", manifests_path: "manifests", manifest_file: "default.pp" #, module_path: "/etc/puppet/modules"
 
@@ -69,5 +80,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vbguest.no_remote = true
   end
 
-  # TODO vagrant up still fails on some dependency conflict
+  # TODO vagrant up still fails
+  # https://serverfault.com/questions/882112/error-puppet-hash-expected-on-the-default-at-tmp-modules-apt-manifests-i
 end
