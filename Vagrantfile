@@ -52,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.synced_folder ".", "/measurementor", create: "true"
   config.vm.box = "hashicorp/precise64"
-  config.vm.box_version = "1.0.0"
+  config.vm.box_version = "1.1.0"
   config.vm.hostname = "localhost"
 
   config.vm.network :forwarded_port, guest: 27017, host: 27017 #mongo

@@ -1,0 +1,14 @@
+elk:
+  image: sebp/elk:es241_l240_k461
+  ports:
+    - "5601:5601"
+    - "9200:9200"
+    - "5044:5044"
+
+mongo:
+    image: mongo:3.6.14
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodb
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+    ports:
+      - "27017:27017"
